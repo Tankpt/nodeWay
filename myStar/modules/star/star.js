@@ -34,30 +34,7 @@ module.exports = search =  function(gitname){
         hasNext = 1,
         ep = new EventProxy();
 
-    ep.tail('search', function () {
-
-        if(hasNext===1){
-            g_page ++;
-            getDate();
-        }else{
-            ep.unbind();
-            //console.log(resultArray);
-            var queryArray = [];
-            for(var i= 0,len=resultArray.length;i<len;i++){
-                queryArray.push(resultArray[i].name);
-            }
-            StarItem.prototype.get({
-                name: { $in: queryArray }
-            },function(err,starArray){
-
-                var _insertArray = findNew(resultArray,starArray);
-                console.log(_insertArray.length);
-                StarItem.prototype.save();
-            });
-        }
-    });
-
-   function getDate (){
+    function getDate (){
        https.get(desUrl.replace(/pageNumber/g,g_page), function(res) {
            var source = "";
 
@@ -87,5 +64,40 @@ module.exports = search =  function(gitname){
            console.log("获取数据出现错误");
        });
    }
-   getDate();
+    getDate();
+
+    ep.tail('search', function () {
+        if(hasNext===1){
+            g_page ++;
+            getDate();
+        }else{
+            var queryArray = [];
+            for(var i= 0,len=resultArray.length;i<len;i++){
+                queryArray.push(resultArray[i].name);
+            }
+            ep.emit('updateStarItem',queryArray);
+
+        }
+    });
+    ep.all('updateStarItem',function(queryArray){
+        StarItem.prototype.get({
+            name: { $in: queryArray }
+        },function(err,starArray){
+            var _insertArray = findNew(resultArray,starArray);
+            console.log(_insertArray.length);
+            if(_insertArray.length>0){
+                StarItem.prototype.save(_insertArray,function(err,_array){
+                    if (err) {
+                        console.log(err);
+                    }
+                    //console.log(_array);
+                    ep.emit('updateStar');
+                });
+            }
+
+        });
+    });
+    ep.all('updateStar',function(){
+        console.log("yes");
+    });
 };
