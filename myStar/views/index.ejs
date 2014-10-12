@@ -1,11 +1,24 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+<%- include header %>
+
+
+
+<%- include footer %>
+<script>
+    $(".j-delete").on("click",function(){
+        var  _tmp =$(this).prev()[0];
+        console.log(_tmp);
+        $.ajax({
+            type: "POST",
+            url: "/deleteRss",
+            data: { url: _tmp.dataset.id || '' }
+        }).done(function( msg ) {
+            if(msg=="true"){
+                alert("删除成功");
+                window.location.reload();
+            }else{
+                alert("删除失败");
+            }
+        });
+    });
+</script>
 </html>

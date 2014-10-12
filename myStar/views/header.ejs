@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Git Star</title>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
+</head>
+<body>
+<header class="navbar navbar-default" id="top" role="banner">
+    <div class="container">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">MyGitStar</a>
+        </div>
+        <nav class="navbar-collapse bs-navbar-collapse collapse" role="navigation" >
+            <ul class="nav navbar-nav navbar-right">
+                <% if (user) { %>
+                <li><a><span class="glyphicon glyphicon-user"></span><%= user.name %></a>
+                <li><a href="/logout">点击登出</a></li>
+                <% } else { %>
+                <li><a href="/reg">点击注册</a></li>
+                <li><a href="/login">点击登陆</a></li>
+                <% } %>
+            </ul>
+        </nav>
+    </div>
+</header>
