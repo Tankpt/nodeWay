@@ -85,12 +85,13 @@ module.exports = function(app) {
                     req.flash('error', err);
                     return res.redirect('/reg');
                 }
-                //updateStar(_gitname);
+                updateStar(_gitname,_name);
                 req.session.user = user;
                 req.flash('success', '注册成功!');
                 res.redirect('/');
             });
         });
+
     });
 
 

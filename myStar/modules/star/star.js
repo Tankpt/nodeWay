@@ -10,7 +10,7 @@ var StarItem = require('../../dao/starItem.js'),
 
 var url = "https://github.com/stars/gitname?direction=desc&page=pageNumber&sort=created";
 
-function findNew(arrayL,arrayS){
+function findNew(arrayL,arrayS,type,username){
     var obj = {},
         tmpArray = [];
     for(var i= 0,len = arrayS.length;i<len;i++){
@@ -18,15 +18,23 @@ function findNew(arrayL,arrayS){
     }
     for(var i= 0,len = arrayL.length;i<len;i++){
         if(arrayL[i].name in obj){
-           continue;
+           continue ;
         }else{
-           tmpArray.push(arrayL[i]);
+            if(!!type){
+                tmpArray.push({
+                    userName : username,
+                    starName : arrayL[i].name,
+                    type : "未分类"
+                });
+            }else{
+                tmpArray.push(arrayL[i]);
+            }
         }
     }
     return tmpArray;
 }
 
-module.exports = search =  function(gitname){
+module.exports = search =  function(gitname,username){
 
     var resultArray = [],
         desUrl =url.replace(/gitname/g,gitname),
@@ -93,11 +101,28 @@ module.exports = search =  function(gitname){
                     //console.log(_array);
                     ep.emit('updateStar');
                 });
+            }else{
+                ep.emit('updateStar');
             }
 
         });
     });
     ep.all('updateStar',function(){
         console.log("yes");
+        Star.prototype.get({
+            userName: username
+        },function(err,starArray){
+            var _insertArray = findNew(resultArray,starArray,1,username);
+            console.log(_insertArray.length);
+            if(_insertArray.length>0){
+                Star.prototype.save(_insertArray,function(err,_array){
+                    if (err) {
+                        console.log(err);
+                    }
+
+                });
+            }
+
+        });
     });
 };
