@@ -7,6 +7,6 @@ var rssSearch = require('../../modules/star/star.js');
 console.log(22);
 
 
-rssSearch("tankpt");
+rssSearch("tankpt",'man');
 
 console.log(111);
