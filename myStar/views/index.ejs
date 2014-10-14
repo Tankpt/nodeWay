@@ -1,6 +1,12 @@
 <%- include header %>
 
-
+<% if (starVo.length>0) { %>
+<ul>
+    <% starVo.forEach(function(star){ %>
+        <a href="https://github.com/<%= star.name %>" target="_blank"><%= star.name %></a><br>
+    <% }) %>
+</ul>
+<% } %>
 
 <%- include footer %>
 <script>

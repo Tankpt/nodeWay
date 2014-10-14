@@ -1,4 +1,6 @@
     var User = require('../dao/user.js'),
+        Star = require('../dao/star.js'),
+        StarItem = require('../dao/starItem.js'),
         updateStar = require('../modules/star/star.js');
 
     var EventProxy = require('eventproxy');
@@ -29,13 +31,42 @@ function checkNotLogin(req, res, next) {
 
 module.exports = function(app) {
 
-
+//    app.get('/',checkNotLogin);
     app.get('/', function(req, res){
 
-        res.render('index', {
-            title: 'Hello Rss page',
-            user: req.session.user
-        });
+        if (req.session.user) {
+           Star.prototype.get({
+               userName : req.session.user.name
+           },function(err, starArray){
+              var queryArray = [],
+                  tmpObj ={};
+              for(var i= 0,len=starArray.length;i<len;i++){
+                  queryArray.push(starArray[i].starName);
+                  tmpObj[starArray[i].starName] = starArray[i].type;
+              }
+
+              StarItem.prototype.get({
+                  name: { $in: queryArray }
+              },function(err,itemArray){
+                   for(var i= 0,len=itemArray.length;i<len;i++){
+                       var tmp = itemArray[i];
+                       tmp.type = tmpObj[tmp.name];
+                   }
+                  res.render('index', {
+                      title: 'Hello Rss page',
+                      user: req.session.user ,
+                      starVo : itemArray
+                  });
+              });
+           });
+        }else{
+            res.render('index', {
+                title: 'Hello Rss page',
+                user: req.session.user,
+                starVo : []
+            });
+        }
+
     });
 
     app.get('/login', function(req, res){
@@ -93,7 +124,6 @@ module.exports = function(app) {
         });
 
     });
-
 
     app.post('/update',function(req, res){
 
