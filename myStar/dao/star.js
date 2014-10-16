@@ -62,53 +62,31 @@ Star.prototype.save = function(starArray,callback) {
         });
     });
 };
-//
-//Star.prototype.update = function(_query,_obj,callback){
-//
-//    mongodb.open(function(err,db){
-//        if (err) {
-//            return callback(err);//错误，返回 err 信息
-//        }
-//        //读取 rssTable 集合
-//        db.collection('rssTable', function (err, collection) {
-//            if (err) {
-//                mongodb.close();
-//                return callback(err);//错误，返回 err 信息
-//            }
-//            //将用户数据插入 rssTable 集合
-//            collection.update(_query,{
-//                $set : _obj
-//            }, function (err, rss) {
-//                mongodb.close();
-//                if (err) {
-//                    return callback(err);//错误，返回 err 信息
-//                }
-//                callback(null, rss[0]);//成功！err 为 null，并返回存储后的用户文档
-//            });
-//        });
-//    });
-//};
-//
-//Star.prototype.remove = function(_query,callback){
-//    mongodb.open(function(err,db){
-//        if (err) {
-//            return callback(err);//错误，返回 err 信息
-//        }
-//        //读取 rssTable 集合
-//        db.collection('rssTable', function (err, collection) {
-//            if (err) {
-//                mongodb.close();
-//                return callback(err);//错误，返回 err 信息
-//            }
-//            collection.remove(_query, {
-//                w: 1
-//            }, function (err) {
-//                mongodb.close();
-//                if (err) {
-//                    return callback(err,false);
-//                }
-//                callback(null,true);
-//            });
-//        });
-//    });
-//};
+
+Star.prototype.update = function(_query,_obj,callback){
+
+    mongodb.open(function(err,db){
+        if (err) {
+            return callback(err);//错误，返回 err 信息
+        }
+        //读取 rssTable 集合
+        db.collection('starTable', function (err, collection) {
+            if (err) {
+                mongodb.close();
+                return callback(err);//错误，返回 err 信息
+            }
+            console.log(_query);
+            console.log(_obj);
+            //将用户数据插入 rssTable 集合
+            collection.update(_query,{
+                $set : _obj
+            }, function (err, star) {
+                mongodb.close();
+                if (err) {
+                    return callback(err);//错误，返回 err 信息
+                }
+                callback(null, star[0]);//成功！err 为 null，并返回存储后的用户文档
+            });
+        });
+    });
+};

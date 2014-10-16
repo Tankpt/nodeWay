@@ -11,7 +11,7 @@
 //    rssSearch = require('../modules/rss/rssSearch.js'),
 //    ObjectID = require('mongodb').ObjectID;
 //
-//var PAGESIZE = 5;
+    var PAGESIZE = 10;
 
 function checkLogin(req, res, next) {
     if (!req.session.user) {
@@ -48,14 +48,35 @@ module.exports = function(app) {
               StarItem.prototype.get({
                   name: { $in: queryArray }
               },function(err,itemArray){
+                   var typeObj = {},
+                       typeArray= [],
+                       _pageInfo;
                    for(var i= 0,len=itemArray.length;i<len;i++){
                        var tmp = itemArray[i];
                        tmp.type = tmpObj[tmp.name];
+                       if(typeObj[tmp.type]){
+                           typeObj[tmp.type] ++;
+                       }else{
+                           typeObj[tmp.type] = 1;
+                       }
                    }
+                  for(var key in typeObj){
+                      typeArray.push({
+                          typeName : key,
+                          count : typeObj[key]
+                      });
+                  }
+                  _pageInfo = {
+                          psize : Math.ceil(itemArray.length/PAGESIZE),
+                          p : req.query.p || 1
+                  };
+
                   res.render('index', {
                       title: 'Hello Rss page',
                       user: req.session.user ,
-                      starVo : itemArray
+                      starVo : itemArray.slice((_pageInfo.p-1)*PAGESIZE,_pageInfo.p*PAGESIZE),
+                      pagePation : _pageInfo,
+                      typeArray :typeArray
                   });
               });
            });
@@ -63,7 +84,9 @@ module.exports = function(app) {
             res.render('index', {
                 title: 'Hello Rss page',
                 user: req.session.user,
-                starVo : []
+                starVo : [],
+                pageInfo : '',
+                typeArray : ''
             });
         }
 
@@ -125,7 +148,26 @@ module.exports = function(app) {
 
     });
 
+    app.get('/update', checkNotLogin);
     app.post('/update',function(req, res){
+        var _query = {
+                starName : req.body.starName,
+                userName : req.session.user.name
+            },
+            _obj = {
+                starName : req.body.starName,
+                userName : req.session.user.name,
+                type : req.body.type
+            };
 
+        res.writeHead(200, {"Content-Type": "text/plain"});
+        Star.prototype.update(_query,_obj,function(err,callback){
+            if(!!callback){
+                res.write("true");
+            }else{
+                res.write("fasle");
+            }
+            res.end();
+        });
    });
 };
