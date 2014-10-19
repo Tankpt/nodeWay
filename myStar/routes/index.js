@@ -31,9 +31,9 @@ function checkNotLogin(req, res, next) {
 
 module.exports = function(app) {
 
-//    app.get('/',checkNotLogin);
-    app.get('/', function(req, res){
 
+    app.get('/', function(req, res){
+        var pageType = req.query.type || '';
         if (req.session.user) {
            Star.prototype.get({
                userName : req.session.user.name
@@ -50,6 +50,7 @@ module.exports = function(app) {
               },function(err,itemArray){
                    var typeObj = {},
                        typeArray= [],
+                       starVoList = [],
                        _pageInfo;
                    for(var i= 0,len=itemArray.length;i<len;i++){
                        var tmp = itemArray[i];
@@ -59,6 +60,9 @@ module.exports = function(app) {
                        }else{
                            typeObj[tmp.type] = 1;
                        }
+                       if(tmp.type == pageType || !pageType){
+                           starVoList.push(tmp);
+                       }
                    }
                   for(var key in typeObj){
                       typeArray.push({
@@ -67,16 +71,17 @@ module.exports = function(app) {
                       });
                   }
                   _pageInfo = {
-                          psize : Math.ceil(itemArray.length/PAGESIZE),
+                          psize : Math.ceil(starVoList.length/PAGESIZE),
                           p : req.query.p || 1
                   };
 
                   res.render('index', {
                       title: 'Hello Rss page',
                       user: req.session.user ,
-                      starVo : itemArray.slice((_pageInfo.p-1)*PAGESIZE,_pageInfo.p*PAGESIZE),
+                      starVo : starVoList.slice((_pageInfo.p-1)*PAGESIZE,_pageInfo.p*PAGESIZE),
                       pagePation : _pageInfo,
-                      typeArray :typeArray
+                      typeArray :typeArray ,
+                      pageType : pageType
                   });
               });
            });
@@ -86,7 +91,8 @@ module.exports = function(app) {
                 user: req.session.user,
                 starVo : [],
                 pageInfo : '',
-                typeArray : ''
+                typeArray : '',
+                pageType : pageType
             });
         }
 

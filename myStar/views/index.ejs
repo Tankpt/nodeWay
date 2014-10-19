@@ -10,12 +10,12 @@
         <div class="col-md-3">
             <div class="list-group">
                 <li class="list-group-item">
-                    <a href="">全部</a>
+                    <a href="/">全部</a>
                 </li>
                  <% if (typeArray.length>0) { %>
                     <% typeArray.forEach(function(type){ %>
                         <li class="list-group-item">
-                            <a href=""><%= type.typeName %></a>
+                            <a href="?type=<%= type.typeName %>"><%= type.typeName %></a>
                             <span class="badge"><%= type.count %></span>
                         </li>
                     <% }) %>
@@ -26,14 +26,17 @@
             <% if (starVo.length>0) { %>
             <ul>
                 <% starVo.forEach(function(star){ %>
-                    <div class="list-group">
-                        <div class="list-group-item">
-                            <a href="https://github.com/<%= star.name %>" target="_blank" class="list-group-item-heading starName"><%= star.name %></a>
-                            <a class="btn btn-primary pull-right j-edit" data-type="<%= star.name %>">编辑</a>
-                            <p class="list-group-item-text"><%= star.description %></p>
-                            <p><%= star.starTime %></p>
+                    <% if(  star.type == pageType  || !pageType){ %>
+                        <div class="list-group">
+                            <div class="list-group-item">
+                                <a href="https://github.com/<%= star.name %>" target="_blank" class="list-group-item-heading starName"><%= star.name %></a>
+                                <a class="btn btn-primary pull-right j-edit" data-name="<%= star.name %>" data-type="<%= star.type %>"　>编辑</a>
+                                <p class="list-group-item-text"><%= star.description %></p>
+                                <p><%= star.starTime %></p>
+                                <P> <span class="badge"><%= star.type %></span></P>
+                            </div>
                         </div>
-                    </div>
+                    <% } %>
                 <% }) %>
             </ul>
             <% } %>
@@ -41,7 +44,7 @@
                 <% if (pagePation) { %>
                    <ul class="pagination">
                         <% for(var i= 1,len=pagePation.psize; i<=len; i++) {%>
-                            <li <% if (pagePation.p==i) {%>class="active"<% } %>><a href="/?p=<%= i %>"><%= i %></a></li>
+                            <li <% if (pagePation.p==i) {%>class="active"<% } %>><a href="/?p=<%= i %><% if (!!pageType){%>&&type=<%= pageType %> <%}%>"><%= i %></a></li>
                         <% } %>
                     </ul>
                 <% } %>
@@ -111,7 +114,8 @@
 
     $(".j-edit").on("click",function(){
         $('#myModal').modal('show');
-        $('#form-starName').text($(this).data("type"));
+        $('#form-starName').text($(this).data("name"));
+        $('#typeInput').val($(this).data("type"));
     });
 
     $("#typeSelect").on('change',function(){
@@ -131,10 +135,10 @@
                     }
         }).done(function( msg ) {
             if(msg=="true"){
-                alert("删除成功");
+                alert("操作成功");
                 window.location.reload();
             }else{
-                alert("删除失败");
+                alert("操作失败");
             }
         });
     });

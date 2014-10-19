@@ -54,7 +54,6 @@ module.exports = search =  function(gitname,username){
                var $ = cheerio.load(source);
                if(!!$('.blankslate').html()){
                    hasNext = 0 ;
-                   console.log("not exit");
                }else{
                    $('.repo-list-item').each(function(_index,_item) {
                        resultArray.push({
@@ -63,7 +62,6 @@ module.exports = search =  function(gitname,username){
                            starTime : $('.repo-list-meta',_item).text().trim()
                        });
                    });
-                   console.log("exit next page");
                }
                ep.emit('search');
 

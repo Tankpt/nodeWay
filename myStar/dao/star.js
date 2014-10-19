@@ -75,8 +75,6 @@ Star.prototype.update = function(_query,_obj,callback){
                 mongodb.close();
                 return callback(err);//错误，返回 err 信息
             }
-            console.log(_query);
-            console.log(_obj);
             //将用户数据插入 rssTable 集合
             collection.update(_query,{
                 $set : _obj
@@ -85,7 +83,7 @@ Star.prototype.update = function(_query,_obj,callback){
                 if (err) {
                     return callback(err);//错误，返回 err 信息
                 }
-                callback(null, star[0]);//成功！err 为 null，并返回存储后的用户文档
+                callback(null, star);//成功！err 为 null，并返回存储后的用户文档
             });
         });
     });
