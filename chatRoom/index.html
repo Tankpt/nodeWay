@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<input type="text" id="userName">
+
+<br>
+
+<input type="text" id="message">
+
+<button type="button" id="sendBtn">send</button>
+
+<ul id="onlineList"></ul>
+</body>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+
+    var nameInput = document.getElementById("userName"),
+        messageInput = document.getElementById("message"),
+        sendBtn = document.getElementById("sendBtn"),
+        onlineList = document.getElementById("onlineList"),
+        userName = '';
+
+    var socket = io();
+
+    sendBtn.addEventListener('click',function(){
+        userName = nameInput.value;
+        socket.emit('chat message', {
+            from : userName ,
+            msg : messageInput.value,
+            to : "pt"
+        });
+    });
+
+    socket.on('chat message', function(msg){
+        if(msg.to == userName){
+            console.log("receive the message");
+        }
+    });
+
+    socket.on('updateOnline', function(msg){
+        var _htmTpl = "";
+        for(var i=0 ,len=msg.length;i<len;i++ ){
+            _htmTpl += '<li>'+msg[i]+'</li>';
+        }
+        onlineList.innerHTML = _htmTpl;
+    });
+</script>
+</html>
